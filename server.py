@@ -4,15 +4,32 @@ from flask import Flask,render_template,request,redirect,flash,url_for
 
 def loadClubs():
     with open('clubs.json') as c:
-         listOfClubs = json.load(c)['clubs']
-         return listOfClubs
+         data = json.load(c)
+         clubs_list = data.get('clubs')
+         for club in clubs_list:
+             # normaliser les points en int
+             club['points'] = int(club.get('points', 0))
+         return clubs_list
 
 
 def loadCompetitions():
     with open('competitions.json') as comps:
-         listOfCompetitions = json.load(comps)['competitions']
-         return listOfCompetitions
+         data = json.load(comps)
+         competitions_list = data.get('competitions', [])
+         for comp in competitions_list:
+             # normaliser le nombre de places en int
+             comp['numberOfPlaces'] = int(comp.get('numberOfPlaces', 0))
+         return competitions_list
 
+# Save clubs to file
+def saveClubs():
+    with open ('clubs.json', 'w') as f:
+        json.dump({'clubs': clubs}, f, indent=4)
+
+# Save competitions to file
+def saveCompetitions():
+    with open('competitions.json', 'w') as f:
+        json.dump({'competitions': competitions}, f, indent=4)
 
 app = Flask(__name__)
 app.secret_key = 'something_special'
@@ -76,6 +93,22 @@ def purchasePlaces():
     if placesRequired > available:
         flash("Not enough places available.")
         return render_template('welcome.html', club=club, competitions=competitions)
+    
+    competition['numberOfPlaces'] = available - placesRequired
+
+    if club['points'] < placesRequired:
+        flash("Not enough points to book these places.")
+        # restaurer le nombre de places si moins de points
+        return render_template('welcome.html', club=club, competitions=competitions)
+    
+    club['points'] -= placesRequired
+
+    # persister les changements
+    saveCompetitions()
+    saveClubs()
+
+    flash('Great - booking complete!')
+    return render_template('welcome.html', club=club, competitions=competitions)
 
 
 # TODO: Add route for points display
