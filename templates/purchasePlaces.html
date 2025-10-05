@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase Confirmation | GUDLFT</title>
+</head>
+
+<body>
+    <h2>Booking Confirmation</h2>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+
+    <p>Club: <strong>{{ club.name }}</strong></p>
+    <p>Competition: <strong>{{ competition.name }}</strong></p>
+    <p>Places booked: <strong>{{ placesRequired }}</strong></p>
+    <p>Remaining points: <strong>{{ club.points }}</strong></p>
+    <p>Places left in competition: <strong>{{ competition.numberOfPlaces }}</strong></p>
+
+    <a href="{{ url_for('welcomeSummary') }}">← Back to summary</a>
+</body>
+
+</html>

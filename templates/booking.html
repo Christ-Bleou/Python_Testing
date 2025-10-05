@@ -1,21 +1,37 @@
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Booking for {{competition['name']}} || GUDLFT</title>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Booking for {{ competition.name }} | GUDLFT</title>
 </head>
 
 <body>
-    <h2>{{competition['name']}}</h2>
-    Places available: {{competition['numberOfPlaces']}}
-    <form action="/purchasePlaces" method="post">
-        <input type="hidden" name="club" value="{{club['name']}}">
-        <input type="hidden" name="competition" value="{{competition['name']}}">
-        <label for="places">How many places?</label>
-        <input type="number" name="places" id="places" min="1" max="{{competition.numberOfPlaces}}" required />
-        <button type="submit">Book</button>
-    </form>
+    <main>
+        <h2>Booking for {{ competition.name }}</h2>
+        <p>Places available: <strong>{{ competition.numberOfPlaces }}</strong></p>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <ul>
+                {% for message in messages %}
+                <li style="color: red;">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% endwith %}
+
+        <form action="{{ url_for('purchasePlaces') }}" method="post">
+            <input type="hidden" name="club" value="{{ club.name }}">
+            <input type="hidden" name="competition" value="{{ competition.name }}">
+            <label for="places">How many places?</label>
+            <input type="number" name="places" id="places" min="1" max="{{ competition.numberOfPlaces}}" required />
+            <button type="submit">Book</button>
+        </form>
+
+        <p><a href="{{ url_for('welcomeSummary') }}">← Back to summary</a></p>
+    </main>
 </body>
 
 </html>
